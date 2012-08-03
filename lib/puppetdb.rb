@@ -47,8 +47,8 @@ class PuppetDB
 
   def query_puppetdb(host, port, query)
     http = Net::HTTP.new(host, port)
-    http.use_ssl = true
-    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    #http.use_ssl = true
+    #http.verify_mode = OpenSSL::SSL::VERIFY_NONE
 
     type = query.keys.first
 
