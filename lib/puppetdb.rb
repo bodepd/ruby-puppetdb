@@ -11,6 +11,8 @@ class PuppetDB
 
     truth_values = []
 
+    return query_puppetdb(host, port, :empty) if stack == []
+
     stack.each do |exp|
       case exp.keys.first
         when "statement"
@@ -50,15 +52,23 @@ class PuppetDB
     http.use_ssl = true
     http.verify_mode = OpenSSL::SSL::VERIFY_NONE
 
-    type = query.keys.first
+    if query == :empty
 
-    case type
-      when "resources"
-        resp, data = http.get("/resources?query=%s" % URI.escape(query[type].to_json), {"accept" => "application/json"})
-        return JSON.parse(data).map{|f| f["certname"]}
-      when "nodes"
-        resp, data = http.get("/nodes?query=%s" % URI.escape(query[type].to_json), {"accept" => "application/json"})
-        return JSON.parse(data)
+      resp, data = http.get("/nodes", {"accept" => "application/json"})
+      return JSON.parse(data)
+
+    else
+
+      type = query.keys.first
+
+      case type
+        when "resources"
+          resp, data = http.get("/resources?query=%s" % URI.escape(query[type].to_json), {"accept" => "application/json"})
+          return JSON.parse(data).map{|f| f["certname"]}
+        when "nodes"
+          resp, data = http.get("/nodes?query=%s" % URI.escape(query[type].to_json), {"accept" => "application/json"})
+          return JSON.parse(data)
+      end
     end
   end
 end
